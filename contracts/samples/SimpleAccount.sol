@@ -6,6 +6,7 @@ pragma solidity ^0.8.12;
 /* solhint-disable reason-string */
 
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol";
 
@@ -92,7 +93,7 @@ contract SimpleAccount is BaseAccount, TokenCallbackHandler, UUPSUpgradeable, In
     /// implement template method of BaseAccount
     function _validateSignature(UserOperation calldata userOp, bytes32 userOpHash)
     internal override virtual returns (uint256 validationData) {
-        bytes32 hash = userOpHash.toEthSignedMessageHash();
+        bytes32 hash = MessageHashUtils.toEthSignedMessageHash(userOpHash);
         if (owner != hash.recover(userOp.signature))
             return SIG_VALIDATION_FAILED;
         return 0;
